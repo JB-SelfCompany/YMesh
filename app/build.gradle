@@ -2,12 +2,6 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 android {
     signingConfigs {
-        release {
-            storeFile file("YMesh-release-key.jks")
-            storePassword System.getenv("STORE_PASSWORD")
-            keyAlias "YMesh-key"
-            keyPassword System.getenv("KEY_PASSWORD")
-        }
     }
     defaultConfig {
         minSdkVersion 23

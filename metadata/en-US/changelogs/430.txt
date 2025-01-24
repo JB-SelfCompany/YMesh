@@ -1,9 +1,0 @@
-* store MAC addresses as IP addresses (EUI64)
-* show IP addresses of mobile data interfaces
-* update WebRTC version 123 (Threema package)
-* fix hostname address lookup
-* add hostnames to address management selection
-* add Traditional Chinese translation by hugoalh
-* update French translation by Miala
-* update Brazilian translation by Paulo Pereira
-* Android 6 or greater is required (because of WebRTC)

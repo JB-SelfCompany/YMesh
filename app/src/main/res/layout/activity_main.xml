@@ -13,22 +13,27 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
-        android:background="?android:windowBackground"
-        >
+        android:background="?colorSurface"
+        android:elevation="4dp">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            >
+            android:theme="@style/ThemeOverlay.MaterialComponents.Dark.ActionBar"
+            app:popupTheme="@style/ThemeOverlay.MaterialComponents.Light"
+            app:menu="@menu/menu_main"
+            app:navigationIcon="@drawable/ic_menu">
 
             <TextView
                 android:id="@+id/toolbar_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text=""
+                android:text="@string/app_name"
                 android:textSize="@dimen/title_text_size"
-                android:visibility="gone" />
+                android:textColor="?colorOnSurface"
+                android:visibility="visible"
+                style="@style/TextAppearance.MaterialComponents.Headline6" />
 
         </androidx.appcompat.widget.Toolbar>
 

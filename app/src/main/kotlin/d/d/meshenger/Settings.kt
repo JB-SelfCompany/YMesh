@@ -1,7 +1,8 @@
 package d.d.meshenger
 
-import org.json.JSONObject
 import org.json.JSONArray
+import org.json.JSONException
+import org.json.JSONObject
 import java.util.*
 
 class Settings {
@@ -47,6 +48,53 @@ class Settings {
     }
 
     companion object {
+        fun createDefault(): Settings {
+            val s = Settings()
+            
+            // Set default values
+            s.nightMode = "auto"
+            s.speakerphoneMode = "auto"
+            s.blockUnknown = false
+            s.useNeighborTable = false
+            s.guessEUI64Address = true
+            s.videoHardwareAcceleration = true
+            s.disableAudioProcessing = false
+            s.connectTimeout = 500
+            s.disableCallHistory = false
+            s.disableProximitySensor = false
+            s.promptOutgoingCalls = false
+            s.showUsernameAsLogo = true
+            s.pushToTalk = false
+            s.startOnBootup = false
+            s.connectRetries = 1
+            s.enableMicrophoneByDefault = true
+            s.enableCameraByDefault = false
+            s.selectFrontCameraByDefault = true
+            s.disableCpuOveruseDetection = false
+            s.autoAcceptCalls = false
+            s.videoDegradationMode = "balanced"
+            s.cameraResolution = "auto"
+            s.cameraFramerate = "auto"
+            s.automaticStatusUpdates = true
+            s.themeName = "sky_blue"
+            s.skipStartupPermissionCheck = false
+
+            // Get first available IPv6 address with yggdrasil prefix
+            val addresses = AddressUtils.collectAddresses()
+                .filter { it.address.startsWith("2") && it.address.contains(":") }
+                .map { it.address }
+            
+            if (addresses.isNotEmpty()) {
+                s.addresses = mutableListOf(addresses.first())
+            } else {
+                s.addresses = mutableListOf()
+                Log.w("Settings", "No valid IPv6 addresses found")
+            }
+
+            return s
+        }
+
+        @Throws(JSONException::class)
         fun fromJSON(obj: JSONObject): Settings {
             val s = Settings()
             s.username = obj.getString("username")
@@ -84,18 +132,22 @@ class Settings {
             val addresses = mutableListOf<String>()
             for (i in 0 until array.length()) {
                 var address = array[i].toString()
-                if (AddressUtils.isIPAddress(address) || AddressUtils.isDomain(address)) {
+                if (AddressUtils.isIPAddress(address)) {
+                    // Only allow IPv6 addresses with yggdrasil prefix (0x02)
+                    if (address.startsWith("2") && address.contains(":")) {
+                        address = address.lowercase(Locale.ROOT)
+                        if (address !in addresses) {
+                            addresses.add(address)
+                        }
+                    }
+                } else if (AddressUtils.isDomain(address)) {
                     address = address.lowercase(Locale.ROOT)
-                } else if (AddressUtils.isMACAddress(address)) {
-                    // wrap MAC address to EUI64 link local address
-                    // for backwards compatibility
-                    address = AddressUtils.getLinkLocalFromMAC(address)!!
+                    if (address !in addresses) {
+                        addresses.add(address)
+                    }
                 } else {
                     Log.d("Settings", "invalid address $address")
                     continue
-                }
-                if (address !in addresses) {
-                    addresses.add(address)
                 }
             }
             s.addresses = addresses.toMutableList()
@@ -113,9 +165,9 @@ class Settings {
             obj.put("block_unknown", s.blockUnknown)
             obj.put("use_neighbor_table", s.useNeighborTable)
             obj.put("guess_eui64_address", s.guessEUI64Address)
-            obj.put("connect_timeout", s.connectTimeout)
             obj.put("video_hardware_acceleration", s.videoHardwareAcceleration)
             obj.put("disable_audio_processing", s.disableAudioProcessing)
+            obj.put("connect_timeout", s.connectTimeout)
             obj.put("disable_call_history", s.disableCallHistory)
             obj.put("disable_proximity_sensor", s.disableProximitySensor)
             obj.put("prompt_outgoing_calls", s.promptOutgoingCalls)
@@ -137,8 +189,8 @@ class Settings {
             obj.put("skip_startup_permission_check", s.skipStartupPermissionCheck)
 
             val addresses = JSONArray()
-            for (i in s.addresses.indices) {
-                addresses.put(s.addresses[i])
+            for (address in s.addresses) {
+                addresses.put(address)
             }
             obj.put("addresses", addresses)
 

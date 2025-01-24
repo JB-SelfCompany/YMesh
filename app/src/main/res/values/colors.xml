@@ -6,4 +6,8 @@
     <color name="dark_grey">#6D6B6B</color>
     <color name="light_grey">#B1B1B1</color>
     <color name="lighter_grey">#D9D9D9</color>
+    
+    <!-- Material Design colors -->
+    <color name="surface">#FFFFFF</color>
+    <color name="on_surface">#000000</color>
 </resources>

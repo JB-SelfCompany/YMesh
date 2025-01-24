@@ -1,3 +1,0 @@
-* update translations
-  * Arabic by ButterflyOfFire
-  * Russian by oneofthehorses

@@ -1,3 +1,0 @@
-* Try contact addresses in the order of local to global address
-* Revert WebRTC changes in 3.2.0 and disable WebRTC NetworkMonitor instead
-* remove logo from main activity

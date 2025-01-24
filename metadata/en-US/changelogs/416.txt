@@ -1,3 +1,0 @@
-* add setting to automatically accept calls
-* add setting to password protect the menu
-* support adaptive and monochrome launcher icon

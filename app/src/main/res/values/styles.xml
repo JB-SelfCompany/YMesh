@@ -1,10 +1,4 @@
 <resources>
-    <style name="ButtonStyle" parent="@android:style/Widget.Button">
-        <item name="android:textSize">20sp</item>
-        <item name="android:background">@drawable/button_background</item>
-        <item name="android:fontFamily">@font/lato_bold</item>
-    </style>
-
     <style name="ButtonColorFireRed" parent="ButtonStyle">
         <item name="android:textColor">@color/white</item>
         <item name="android:backgroundTint">#FFEC3E3E</item>
@@ -32,10 +26,53 @@
 
     <style name="CustomTabTextStyle" parent="TextAppearance.Design.Tab">
         <item name="android:textSize">@dimen/headline_text_size</item>
+        <item name="android:background">@drawable/tab_background</item>
+        <item name="android:padding">8dp</item>
+        <item name="android:minHeight">48dp</item>
+        <item name="android:minWidth">96dp</item>
+        <item name="android:textColor">?android:attr/textColorPrimary</item>
+        <item name="android:textColorSecondary">?android:attr/textColorSecondary</item>
+        <item name="android:stateListAnimator">@animator/tab_state_list_animator</item>
     </style>
 
     <style name="MySpinner" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="android:dividerHeight">2dp</item>
         <item name="android:divider">#7C7B7B</item>
+    </style>
+
+    <!-- Animation styles -->
+    <style name="Animation">
+        <item name="android:windowEnterAnimation">@anim/fade_in</item>
+        <item name="android:windowExitAnimation">@anim/fade_out</item>
+    </style>
+
+    <style name="Animation.Fade" parent="Animation">
+        <item name="android:windowEnterAnimation">@anim/fade_in</item>
+        <item name="android:windowExitAnimation">@anim/fade_out</item>
+    </style>
+
+    <!-- Global rounded corners -->
+    <style name="RoundedCorners">
+        <item name="android:radius">12dp</item>
+    </style>
+
+    <!-- Update button style with rounded corners -->
+    <style name="ButtonStyle" parent="@android:style/Widget.Button">
+        <item name="android:textSize">20sp</item>
+        <item name="android:background">@drawable/button_background</item>
+        <item name="android:fontFamily">@font/lato_bold</item>
+        <item name="android:backgroundTint">?attr/colorPrimary</item>
+        <item name="android:backgroundTintMode">src_over</item>
+        <item name="android:stateListAnimator">@animator/button_state_list_animator</item>
+        <item name="android:elevation">4dp</item>
+        <item name="cornerRadius">12dp</item>
+    </style>
+
+    <!-- Update dialog style with animations -->
+    <style name="AlertDialogTheme" parent="Theme.AppCompat.Light.Dialog.Alert">
+        <item name="android:windowAnimationStyle">@style/Animation.Fade</item>
+        <item name="android:background">@drawable/dialog_background</item>
+        <item name="android:windowBackground">@drawable/dialog_background</item>
+        <item name="cornerRadius">16dp</item>
     </style>
 </resources>

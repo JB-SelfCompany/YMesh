@@ -1,3 +1,0 @@
-* various UI fixes
-* some minor translation fixes
-* allow user names of 1 character

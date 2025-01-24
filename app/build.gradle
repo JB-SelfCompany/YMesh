@@ -2,17 +2,23 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 android {
     signingConfigs {
+        release {
+            storeFile file("YMesh-release-key.jks")
+            storePassword System.getenv("STORE_PASSWORD")
+            keyAlias "YMesh-key"
+            keyPassword System.getenv("KEY_PASSWORD")
+        }
     }
     defaultConfig {
-        minSdkVersion 21
+        minSdkVersion 23
         targetSdkVersion 35
         compileSdk 34
-        versionCode 443
-        versionName "4.4.3"
+        versionCode 1
+        versionName "1.0"
         testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         vectorDrawables.useSupportLibrary = true
         multiDexEnabled true
-        resourceConfigurations += ['ar', 'ca', 'de', 'en', 'es', 'fr', 'nb-rNO', 'pl', 'pt-rBR', 'ru', 'uk', 'zh', 'zh-rTW']
+        resourceConfigurations += ['en']
     }
     buildTypes {
         release {
@@ -56,7 +62,7 @@ dependencies {
     implementation 'com.android.support:multidex:1.0.3'
     implementation 'androidx.viewpager2:viewpager2:1.1.0'
     implementation 'com.google.android.flexbox:flexbox:3.0.0'
-    implementation 'im.conversations.webrtc:webrtc-android:119.0.0'
+    implementation 'im.conversations.webrtc:webrtc-android:129.0.0'
     //implementation 'ch.threema:webrtc-android:123.0.0'
     //implementation files('../webrtc/libwebrtc-123.0.0.aar')
 }

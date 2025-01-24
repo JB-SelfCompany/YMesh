@@ -8,8 +8,8 @@
     <string name="address_management_help_text">Select one or more IP addresses that will be included in the QR code you can will share. These addresses will be used by others to reach you. Be aware that the IP address change depending on the network. Enable your WLAN if no IP address is visible.</string>
     <string name="app_description">Allow voice and video communication without any server or Internet access. Simply scan each others contact QR code and call each other. This works on most networks, e.g. at home, in community networks or at work.</string>
     <string name="app_license" translatable="false">GPL-3.0-or-later</string>
-    <string name="app_name" translatable="false">Meshenger</string>
-    <string name="app_website" translatable="false">https://github.com/meshenger-app</string>
+    <string name="app_name" translatable="false">YMesh</string>
+    <string name="app_website" translatable="false">https://github.com/JB-SelfCompany/YMesh</string>
     <string name="ask_for_bluetooth_connect_permission">Give permission to use a Bluetooth headset now or wait until you use it.</string>
     <string name="ask_for_camera_permission">Give permission to use the camera now or wait until you use it.</string>
     <string name="ask_for_draw_overlay_permission">Missing permission to draw on top. Needed to bring incoming calls to the foreground.</string>
@@ -167,4 +167,5 @@
     <string name="warning_no_addresses_configured">No address for QR code configured.</string>
     <string name="warning_no_addresses_found">Configured addresses not found. Did the network change?</string>
     <string name="wrong_password">Wrong password</string>
+    <string name="menu_help">Help</string>
 </resources>

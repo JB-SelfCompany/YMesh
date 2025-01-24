@@ -7,15 +7,14 @@ import java.net.InetSocketAddress
 class InetSocketAddressComparator(val lastWorkingAddress: InetSocketAddress? = null) : Comparator<InetSocketAddress> {
     private fun isPrivateAddress(address: InetAddress): Boolean {
         val bytes = address.address
-         if (bytes.size == 4) {
-            return (bytes[0].toUByte() == 192.toUByte() && bytes[1].toUByte() == 168.toUByte()) // 192.168.0.0/16
-                || (bytes[0].toUByte() == 10.toUByte()) // 10.0.0.0/8
-                || (bytes[0].toUByte() == 172.toUByte() && (bytes[1].toUByte() >= 16u && bytes[1].toUByte() <= 31u)) // 172.16.0.0/12
+        if (bytes.size == 4) {
+            return false // IPv4 addresses are not supported
         } else if (bytes.size == 16) {
-            return (bytes[0].toUInt() and 0xfeu) == 0xfcu // fc00::/7 (ULA)
-        } else {
-            return false
+            // Only allow 200::/7 and 300::/7
+            val firstByte = bytes[0].toUInt() and 0xfeu
+            return firstByte != 0x40u && firstByte != 0x60u
         }
+        return false
     }
 
     private fun getPriority(address: InetSocketAddress): Int {
@@ -32,14 +31,10 @@ class InetSocketAddressComparator(val lastWorkingAddress: InetSocketAddress? = n
                 return 6
             }
         } else {
-            if (address.address.isLinkLocalAddress) {
-                //println("is link local: ${address}")
-                return 2
-            } else if (isPrivateAddress(address.address)) {
+            if (isPrivateAddress(address.address)) {
                 return 4
-            } else {
-                return 5
             }
+            return 5
         }
     }
 

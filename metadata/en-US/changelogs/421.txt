@@ -1,2 +1,0 @@
-* fix setting for enabled front/back default camera
-* fix crash when a framerate is selected in settings

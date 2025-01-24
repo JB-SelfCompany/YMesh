@@ -1,7 +1,0 @@
-* ask for notification permission
-  * needed to show notification for last incoming call
-* add setting to disable check for overlay permisson
-  * used to show incoming call window
-* minor translation updates
-* display debug after version number for debug builds
-* change target SDK version to 35 (Android 15)

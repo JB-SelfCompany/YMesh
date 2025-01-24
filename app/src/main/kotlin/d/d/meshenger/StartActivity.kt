@@ -21,6 +21,8 @@ import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
+import java.net.InetAddress
+import java.net.Inet6Address
 import d.d.meshenger.MainService.MainBinder
 import org.libsodium.jni.NaCl
 import org.libsodium.jni.Sodium
@@ -95,11 +97,12 @@ class StartActivity : BaseActivity(), ServiceConnection {
             3 -> {
                 Log.d(this, "init 3: check username")
                 if (binder!!.getSettings().username.isEmpty()) {
-                    // set username
-                    showMissingUsernameDialog()
-                } else {
-                    continueInit()
+                    // generate random username for first start
+                    val username = generateRandomUserName()
+                    binder!!.getSettings().username = username
+                    binder!!.saveDatabase()
                 }
+                continueInit()
             }
             4 -> {
                 Log.d(this, "init 4: check key pair")
@@ -185,20 +188,18 @@ class StartActivity : BaseActivity(), ServiceConnection {
 
     private fun getDefaultAddress(): AddressEntry? {
         val addresses = AddressUtils.collectAddresses()
-
-        // any EUI-64 address
-        val addressEUI64 = addresses.firstOrNull { it.device.startsWith("wlan") && it.address.contains(":fffe:") }
-        if (addressEUI64 != null) {
-            return addressEUI64
+        
+        // Return first valid IPv6 address
+        return addresses.firstOrNull { address ->
+            try {
+                val ip = InetAddress.getByName(address.address)
+                ip is Inet6Address &&
+                !ip.isLinkLocalAddress &&
+                !ip.isLoopbackAddress
+            } catch (e: Exception) {
+                false
+            }
         }
-
-        // any IPv6 address
-        val addressLinkLocal = addresses.firstOrNull { it.device.startsWith("wlan") && it.address.contains(":") }
-        if (addressLinkLocal != null) {
-            return addressLinkLocal
-        }
-
-        return null
     }
 
     private fun showMissingAddressDialog() {

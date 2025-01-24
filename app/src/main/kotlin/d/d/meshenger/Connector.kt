@@ -35,10 +35,6 @@ class Connector(
 
     var addressTry: AddressTry? = null
 
-    private fun isLinkLocalAddress(address: String): Boolean {
-        return AddressUtils.parseInetAddress(address)?.isLinkLocalAddress ?: false
-    }
-
     private fun getAllSocketAddresses(contact: Contact): List<InetSocketAddress> {
         val port = MainService.serverPort
         val addresses = mutableListOf<InetSocketAddress>()
@@ -49,18 +45,9 @@ class Connector(
             addresses.add(lastWorkingAddress)
         }
 
-        val ownInterfaces = Collections.list(NetworkInterface.getNetworkInterfaces())
-
         for (address in contact.addresses) {
             val socketAddress = AddressUtils.stringToInetSocketAddress(address, port) ?: continue
-
-            if (isLinkLocalAddress(socketAddress.hostString)) {
-                for (interfaceName in collectInterfaceNames(ownInterfaces)) {
-                    addresses.add(InetSocketAddress("${socketAddress.hostString}%${interfaceName}", socketAddress.port))
-                }
-            } else {
-                addresses.add(socketAddress)
-            }
+            addresses.add(socketAddress)
 
             // get MAC address from IPv6 EUI64 address and construct new ones with own IPv6 prefixes
             if (guessEUI64Address || useNeighborTable) {
@@ -68,7 +55,7 @@ class Connector(
                 val macAddress = extractMAC(inetAddress)
                 if (macAddress != null) {
                     if (guessEUI64Address) {
-                        addresses.addAll(mapMACtoPrefixes(ownInterfaces, macAddress, port))
+                        addresses.addAll(mapMACtoPrefixes(Collections.list(NetworkInterface.getNetworkInterfaces()), macAddress, port))
                     }
                     if (useNeighborTable) {
                         macs.add(AddressUtils.formatMAC(macAddress))
@@ -178,13 +165,10 @@ class Connector(
                     }
 
                     if (address is Inet6Address) {
-                        if (extractMAC(address) != null || address.isLinkLocalAddress) {
-                            // If a MAC address is embedded in the address from our own system (IPv6 + EUI-64)
-                            // => replace it by the target MAC address
-                            // If the address is fe80:: with a "random" MAC address (no "ff:fe" filler)
-                            // => replace it with the target MAC address anyway
-                            val newAddress = AddressUtils.createEUI64Address(address, macAddress)
-                            addresses.add(InetSocketAddress(newAddress.hostAddress, port))
+                        // Only process addresses in 200::/7 and 300::/7 ranges
+                        val firstByte = address.address[0].toInt() and 0xFF
+                        if ((firstByte and 0xFE) == 0x40) {
+                            addresses.add(InetSocketAddress(address.hostAddress, port))
                         }
                     }
                 }
@@ -217,7 +201,7 @@ class Connector(
     private fun getAddressesFromNeighborTable(lookupMACs: List<String>, port: Int): List<InetSocketAddress> {
         val addresses = mutableListOf<InetSocketAddress>()
         try {
-            // get IPv4 and IPv6 entries
+            // get IPv6 entries only
             val pc = Runtime.getRuntime().exec("ip n l")
             val rd = BufferedReader(
                 InputStreamReader(pc.inputStream, "UTF-8")
@@ -225,41 +209,25 @@ class Connector(
             var line : String
             while (rd.readLine().also { line = it } != null) {
                 val tokens = line.split("\\s+").toTypedArray()
-                // IPv4
-                if (tokens.size == 6) {
-                    val address = tokens[0]
-                    val device = tokens[2]
-                    val mac = tokens[4]
-                    val state = tokens[5]
-                    for (lookupMAC in lookupMACs) {
-                        if (lookupMAC.equals(mac, ignoreCase = true)
-                            && AddressUtils.isIPAddress(address)
-                            && !state.equals("failed", ignoreCase = true)
-                        ) {
-                            if (isLinkLocalAddress(address)) {
-                                addresses.add(InetSocketAddress("$address%$device", port))
-                            } else {
-                                addresses.add(InetSocketAddress(address, port))
-                            }
-                        }
-                    }
-                }
-
-                // IPv6
+                
+                // Process only IPv6 entries
                 if (tokens.size == 7) {
                     val address = tokens[0]
                     val device = tokens[2]
                     val mac = tokens[4]
                     val state = tokens[6]
-                    for (lookupMAC in lookupMACs) {
-                        if (lookupMAC.equals(mac, ignoreCase = true)
-                            && AddressUtils.isIPAddress(address)
-                            && !state.equals("failed", ignoreCase = true)
-                        ) {
-                            if (isLinkLocalAddress(address)) {
-                                addresses.add(InetSocketAddress("$address%$device", port))
-                            } else {
-                                addresses.add(InetSocketAddress(address, port))
+                    
+                    // Check if address is in 200::/7 or 300::/7
+                    val inetAddress = AddressUtils.parseInetAddress(address)
+                    if (inetAddress is Inet6Address) {
+                        val firstByte = inetAddress.address[0].toInt() and 0xFF
+                        if ((firstByte and 0xFE) == 0x40) {
+                            for (lookupMAC in lookupMACs) {
+                                if (lookupMAC.equals(mac, ignoreCase = true)
+                                    && !state.equals("failed", ignoreCase = true)
+                                ) {
+                                    addresses.add(InetSocketAddress(address, port))
+                                }
                             }
                         }
                     }

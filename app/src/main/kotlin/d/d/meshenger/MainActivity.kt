@@ -233,6 +233,9 @@ class MainActivity : BaseActivity(), ServiceConnection {
                 MainService.stop(this)
                 finish()
             }
+            R.id.action_help -> {
+                Toast.makeText(this, "Help clicked", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 

@@ -28,17 +28,6 @@ internal object AddressUtils
             mac[0], mac[1], mac[2], mac[3], mac[4], mac[5])
     }
 
-    // remove interface from link local address
-    // fe80::1%wlan0 => fe80::1
-    fun stripInterface(address: String): String {
-        val pc = address.indexOf('%')
-        return if (pc == -1) {
-            address
-        } else {
-            address.substring(0, pc)
-        }
-    }
-
     // strip first entry, e.g.:
     // /1.2.3.4 => 1.2.3.4
     // google.com/1.2.3.4 => 1.2.3.4
@@ -50,7 +39,7 @@ internal object AddressUtils
 
     // coarse address type distinction
     enum class AddressType {
-        GLOBAL_IP, LOCAL_IP, MULTICAST_IP, DOMAIN
+        GLOBAL_IP, MULTICAST_IP, DOMAIN
     }
 
     fun parseInetAddress(address: String): InetAddress? {
@@ -71,11 +60,12 @@ internal object AddressUtils
         if (ipAddress != null) {
             if (ipAddress.isMulticastAddress) {
                 return AddressType.MULTICAST_IP
-            } else if ((ipAddress.address[1].toInt() and 15) == 0x0E) {
-                // global IP address
+            }
+            
+            // Check if address is in 200::/7 or 300::/7
+            val firstByte = ipAddress.address[0].toInt() and 0xFF
+            if ((firstByte and 0xFE) == 0x40 || (firstByte and 0xFE) == 0x60) {
                 return AddressType.GLOBAL_IP
-            } else {
-                return AddressType.LOCAL_IP
             }
         }
 
@@ -208,31 +198,36 @@ internal object AddressUtils
         val addressList = ArrayList<AddressEntry>()
         try {
             for (nif in Collections.list(NetworkInterface.getNetworkInterfaces())) {
-                if (nif.isLoopback) {
-                    continue
-                }
-
-                if (ignoreDeviceByName(nif.name)) {
+                // Skip loopback and down interfaces
+                if (nif.isLoopback || !nif.isUp) {
                     continue
                 }
 
                 for (ia in nif.interfaceAddresses) {
-                    if (ia.address.isLoopbackAddress) {
+                    val address = ia.address
+                    // Skip loopback and non-IPv6 addresses
+                    if (address.isLoopbackAddress || address !is Inet6Address) {
                         continue
                     }
 
-                    val hostAddress = ia.address.hostAddress
-                    if (hostAddress != null) {
-                        addressList.add(AddressEntry(stripInterface(hostAddress), nif.name))
+                    // Check for Yggdrasil (200::/7) or other global (300::/7) addresses
+                    val firstByte = address.address[0].toInt() and 0xFF
+                    if (firstByte == 0x02 || firstByte == 0x03) {
+                        val hostAddress = address.hostAddress
+                        if (hostAddress != null) {
+                            addressList.add(AddressEntry(stripHost(hostAddress), nif.name))
+                        }
                     }
                 }
             }
+            // Sort by interface name and address
+            addressList.sortWith(compareBy({ it.device }, { it.address }))
         } catch (ex: Exception) {
             // ignore
             Log.d(this, "collectAddresses() error=$ex")
         }
 
-        return addressList.distinct()
+        return addressList
     }
 
     // list all IP/MAC addresses of running network interfaces - for debugging only
@@ -241,38 +236,6 @@ internal object AddressUtils
             val type = getAddressType(ae.address)
             Log.d(this, "Address: ${ae.address} (${ae.device} $type)")
         }
-    }
-
-    /*
-    * Replace the MAC address of an EUi64 scheme IPv6 address with another MAC address.
-    * E.g.: ("fe80::aaaa:aaff:faa:aaa", "bb:bb:bb:bb:bb:bb") => "fe80::9bbb:bbff:febb:bbbb"
-    */
-    fun createEUI64Address(address: Inet6Address, mac: ByteArray): Inet6Address {
-        // address is expected to be an EUI64 address
-        val bytes = address.address
-        bytes[8] = (mac[0] xor 2)
-        bytes[9] = mac[1]
-        bytes[10] = mac[2]
-        // ff:fe may or mac not be already set
-        bytes[11] = 0xFF.toByte()
-        bytes[12] = 0xFE.toByte()
-        bytes[13] = mac[3]
-        bytes[14] = mac[4]
-        bytes[15] = mac[5]
-        return Inet6Address.getByAddress(null, bytes, address.scopeId)
-    }
-
-    /*
-    * E.g. "11:22:33:44:55:66" => "fe80::1322:33ff:fe44:5566"
-    */
-    fun getLinkLocalFromMAC(macAddress: String): String? {
-        val bytes = macAddressToBytes(macAddress)
-        val inetAddress = parseInetAddress("fe80::")
-        if (bytes != null && inetAddress is Inet6Address) {
-            val inetAddressEUI64 = createEUI64Address(inetAddress, bytes)
-            return inetAddressEUI64.toString().substring(1)
-        }
-        return null
     }
 
     /*

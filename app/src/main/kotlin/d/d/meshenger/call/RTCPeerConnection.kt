@@ -362,7 +362,8 @@ abstract class RTCPeerConnection(
                         AddressUtils.closeSocket(socket)
                     }
                 } catch (e: Exception) {
-                    Log.w(this, "continueOnIncomingSocket() got $e => close socket")
+                    Log.w(this, "continueOnIncomingSocket() got $e => close socket. Details: ${e.message}")
+                    reportStateChange(CallState.ERROR_COMMUNICATION)
                     AddressUtils.closeSocket(socket)
                     break
                 }
@@ -396,7 +397,7 @@ abstract class RTCPeerConnection(
                 reportStateChange(CallState.DISMISSED)
                 break
             } else if (action == "keep_alive") {
-                // ignore, keeps the socket alive
+                Log.d(this, "continueOnIncomingSocket() received keep_alive")
                 lastKeepAlive = System.currentTimeMillis()
             } else {
                 Log.e(this, "continueOnIncomingSocket() received unknown action reply: $action")
@@ -511,7 +512,7 @@ abstract class RTCPeerConnection(
     }
 
     companion object {
-        private const val SOCKET_TIMEOUT_MS = 5000L
+        private const val SOCKET_TIMEOUT_MS = 15000L // Increased timeout from 5 to 15 seconds
 
         // used to pass incoming RTCCall to CallActiviy
         public var incomingRTCCall: RTCCall? = null

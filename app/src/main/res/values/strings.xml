@@ -167,5 +167,4 @@
     <string name="warning_no_addresses_configured">No address for QR code configured.</string>
     <string name="warning_no_addresses_found">Configured addresses not found. Did the network change?</string>
     <string name="wrong_password">Wrong password</string>
-    <string name="menu_help">Help</string>
 </resources>

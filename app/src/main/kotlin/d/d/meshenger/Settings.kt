@@ -22,8 +22,8 @@ class Settings {
     var showUsernameAsLogo = true
     var pushToTalk = false
     var startOnBootup = false
-    var connectRetries = 1
-    var connectTimeout = 500
+    var connectRetries = 3
+    var connectTimeout = 2000
     var enableMicrophoneByDefault = true
     var enableCameraByDefault = false
     var selectFrontCameraByDefault = true
@@ -59,14 +59,14 @@ class Settings {
             s.guessEUI64Address = true
             s.videoHardwareAcceleration = true
             s.disableAudioProcessing = false
-            s.connectTimeout = 500
+            s.connectTimeout = 2000
             s.disableCallHistory = false
             s.disableProximitySensor = false
             s.promptOutgoingCalls = false
             s.showUsernameAsLogo = true
             s.pushToTalk = false
             s.startOnBootup = false
-            s.connectRetries = 1
+            s.connectRetries = 3
             s.enableMicrophoneByDefault = true
             s.enableCameraByDefault = false
             s.selectFrontCameraByDefault = true

@@ -6,7 +6,7 @@
     <string name="about_app_website">Website:</string>
     <string name="address_management">Address Management</string>
     <string name="address_management_help_text">Select one or more IP addresses that will be included in the QR code you can will share. These addresses will be used by others to reach you. Be aware that the IP address change depending on the network. Enable your WLAN if no IP address is visible.</string>
-    <string name="app_description">Allow voice and video communication without any server or Internet access. Simply scan each others contact QR code and call each other. This works on most networks, e.g. at home, in community networks or at work.</string>
+    <string name="app_description">Allows for serverless voice and video calls using a P2P connection. Just scan the QR code of a contact and call each other. This works on the Yggdrasil Network mesh network.</string>
     <string name="app_license" translatable="false">GPL-3.0-or-later</string>
     <string name="app_name" translatable="false">YMesh</string>
     <string name="app_website" translatable="false">https://github.com/JB-SelfCompany/YMesh</string>

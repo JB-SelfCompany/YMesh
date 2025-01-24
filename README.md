@@ -1,6 +1,6 @@
 # YMesh
 
-Live voice and video calls using the Yggdrasil Network. No account is required. Just scan the QR code, which will contain the IP address of the contact. This only works on mesh networks.
+Live voice and video calls using the Yggdrasil Network. No account is required. Just scan the QR code, which will contain the IP address of the contact. This only works the Yggdrasil Network mesh network.
 
 Features:
 

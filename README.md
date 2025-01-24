@@ -16,11 +16,11 @@ Limitations:
 
 ## Download
 
-[<img src=“docs/apk.png” alt=“Get it on GitHub” height=“90”>](https://github.com/JB-SelfCompany/YMesh/releases)
+[<img src="docs/apk.png" alt="Get it on GitHub" height="90">](https://github.com/JB-SelfCompany/YMesh/releases)
 
 ## Screenshots
 
-<img src=“graphical-assets/phone-screenshots/logo_4.0.4.png” width=“170”> <img src=“graphical-assets/phone-screenshots/hello_4.0.4.png” width=“170”> <img src="graphical-assets/phone-screenshots/qrcode_4.0.4. png“ width=”170“> <img src=”graphical-assets/phone-screenshots/contacts_4.0.4.png“ width=”170“> <img src=”graphical-assets/phone-screenshots/ringing_4.0.4.png“ width=”170“> <img src=”graphical-assets/phone-screenshots/video_call_4.0.4.png“ width=”170">
+<img src="graphical-assets/phone-screenshots/logo_4.0.4.png" width="170"> <img src="graphical-assets/phone-screenshots/qrcode_4.0.4.png" width="170"> <img src="graphical-assets/phone-screenshots/contacts_4.0.4.png" width="170"> <img src="graphical-assets/phone-screenshots/ringing_4.0.4.png" width="170"> <img src="graphical-assets/phone-screenshots/video_call_4.0.4.png" width="170">
 
 ## Documentation
 
